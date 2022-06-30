@@ -1,5 +1,5 @@
 #!/bin/bash
-source 00-env
+source $( dirname -- "${BASH_SOURCE[0]}" )/00-env
 
 # config
 warn_usage=75

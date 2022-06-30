@@ -1,5 +1,5 @@
 #!/bin/bash
-source 00-env
+source $( dirname -- "${BASH_SOURCE[0]}" )/00-env
 
 # set column width
 COLUMNS=3

@@ -1,0 +1,10 @@
+#!/bin/bash
+white="\e[0;39m"
+blue="\e[1;34m"
+green="\e[1;32m"
+orange="\033[38;5;214m"
+red="\e[1;31m"
+dim="\e[1;30m"
+undim="\e[0m"
+uline="\e[4m"
+creset="\e[0m"

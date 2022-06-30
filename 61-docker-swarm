@@ -1,0 +1,39 @@
+#!/bin/bash
+source 00-env
+
+# set column width
+COLUMNS=3
+
+mapfile -t services < <(docker service ls --format '{{.Name}} {{.Replicas}}' | sort -k1 )
+
+out=""
+for i in "${!services[@]}"; do
+    IFS=" " read name replicas trim <<< ${services[i]}
+    IFS="/" read r1 r2 <<< $replicas
+
+    if [ $r1 != $r2 ]; then
+        replicas="${red}${r1}${dim}/${r2}"
+    else
+        replicas="${green}${r1}${dim}/${r2}"
+    fi
+
+    if [[ -n "$trim" ]]; then
+        replicas+="${blue} ${trim}"
+    fi
+
+    if [[ "${name}" =~ .*"_".* ]]; then
+        IFS="_" read group service <<< $name
+        out+="${dim}${group}_${creset}${service}:,${replicas}${creset},,"
+    else
+        out+="${name}:,${replicas}${creset},,"
+    fi
+
+    # insert \n every $COLUMNS column
+    if [ $((($i+1) % $COLUMNS)) -eq 0 ]; then
+        out+="\n"
+    fi
+done
+out+="\n"
+
+printf "\n${uline}docker swarm${creset}\n"
+printf "$out" | column -ts $',' | sed -e 's/^/  /'

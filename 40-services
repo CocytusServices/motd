@@ -1,0 +1,34 @@
+#!/bin/bash
+source 00-env
+
+# set column width
+COLUMNS=3
+
+services=("arma-sfp" "arma-cb" "docker" "telegraf" "ufw" "fftp")
+# sort services
+IFS=$'\n' services=($(sort <<<"${services[*]}"))
+unset IFS
+
+service_status=()
+# get status of all services
+for service in "${services[@]}"; do
+    service_status+=($(systemctl is-active "$service"))
+done
+
+out=""
+for i in ${!services[@]}; do
+    # color green if service is active, else red
+    if [[ "${service_status[$i]}" == "active" ]]; then
+        out+="${services[$i]}:,${green}${service_status[$i]}${creset},"
+    else
+        out+="${services[$i]}:,${red}${service_status[$i]}${creset},"
+    fi
+    # insert \n every $COLUMNS column
+    if [ $((($i+1) % $COLUMNS)) -eq 0 ]; then
+        out+="\n"
+    fi
+done
+out+="\n"
+
+printf "\n${uline}services${creset}\n"
+printf "$out" | column -ts $',' | sed -e 's/^/  /'

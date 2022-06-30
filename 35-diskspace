@@ -1,0 +1,46 @@
+#!/bin/bash
+source 00-env
+
+# config
+warn_usage=75
+max_usage=90
+bar_width=50
+
+# disk usage: ignore zfs, squashfs & tmpfs
+mapfile -t dfs < <(df -H -t ext4 -t xfs --output=target,pcent,size,used,avail | tail -n+2)
+
+out=""
+
+for line in "${dfs[@]}"; do
+    IFS=" " read target pcent size used avail <<< ${line}
+
+    # get disk usage
+    usage=$(echo "$line" | awk '{print $2}' | sed 's/%//')
+    used_width=$((($usage*$bar_width)/100))
+    # color is green if usage < max_usage, else red
+    if [ "${usage}" -ge "${max_usage}" ]; then
+        color=$red
+    elif [ "${usage}" -ge "${warn_usage}" ]; then
+        color=$orange
+    else
+        color=$green
+    fi
+    # print colored bar until used_width
+    bar="${dim}[${color}"
+    for ((i=0; i<$used_width; i++)); do
+        bar+="="
+    done
+    # print dimmmed bar until end
+    bar+="${white}${dim}"
+    for ((i=$used_width; i<$bar_width; i++)); do
+        bar+="="
+    done
+    bar+="${dim}]${creset}"
+    # print usage line & bar
+    out+="\n"
+    out+="${uline}${target}${creset}: ${pcent} used ${dim}(${size} total, ${avail} free)${creset}\n"
+    out+="${bar}"
+done
+
+printf "\n${uline}disk usage${creset}"
+echo -e "$out" | sed -e 's/^/  /'

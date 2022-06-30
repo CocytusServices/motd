@@ -1,0 +1,57 @@
+#!/bin/bash
+source 00-env
+
+SYSTEM_HOSTNAME=`cat /etc/hostname`
+SYSTEM_DISTRO=`cat /etc/*release | grep "PRETTY_NAME" | cut -d "=" -f 2- | sed 's/"//g'`
+SYSTEM_KERNEL=`uname -sr`
+# get processors
+PROCESSOR_NAME=`grep "model name" /proc/cpuinfo | cut -d ' ' -f3- | awk {'print $0'} | head -1`
+PROCESSOR_COUNT=`grep -ioP 'processor\t:' /proc/cpuinfo | wc -l`
+
+c5s="${orange}"
+c5s+="\n     _/_/_/    _/_/      _/_/_/  _/      _/  _/_/_/_/_/  _/    _/    _/_/_/"
+c5s+="\n  _/        _/    _/  _/          _/  _/        _/      _/    _/  _/"
+c5s+="\n _/        _/    _/  _/            _/          _/      _/    _/    _/_/"
+c5s+="\n_/        _/    _/  _/            _/          _/      _/    _/        _/"
+c5s+="\n _/_/_/    _/_/      _/_/_/      _/          _/        _/_/    _/_/_/"
+c5s+="\n\n${creset}"
+
+hellmail="${orange}"
+hellmail+="\n    _/    _/  _/_/_/_/  _/        _/        _/      _/    _/_/    _/_/_/  _/"
+hellmail+="\n   _/    _/  _/        _/        _/        _/_/  _/_/  _/    _/    _/    _/"
+hellmail+="\n  _/_/_/_/  _/_/_/    _/        _/        _/  _/  _/  _/_/_/_/    _/    _/"
+hellmail+="\n _/    _/  _/        _/        _/        _/      _/  _/    _/    _/    _/"
+hellmail+="\n_/    _/  _/_/_/_/  _/_/_/_/  _/_/_/_/  _/      _/  _/    _/  _/_/_/  _/_/_/_/"
+hellmail+="\n\n${creset}"
+
+metrics="${orange}"
+metrics+="\n    _/      _/  _/_/_/_/  _/_/_/_/_/  _/_/_/    _/_/_/    _/_/_/    _/_/_/"
+metrics+="\n   _/_/  _/_/  _/            _/      _/    _/    _/    _/        _/"
+metrics+="\n  _/  _/  _/  _/_/_/        _/      _/_/_/      _/    _/          _/_/"
+metrics+="\n _/      _/  _/            _/      _/    _/    _/    _/              _/"
+metrics+="\n_/      _/  _/_/_/_/      _/      _/    _/  _/_/_/    _/_/_/  _/_/_/"
+metrics+="\n\n${creset}"
+
+case $SYSTEM_HOSTNAME in 
+
+  cocytus.services)
+    printf "$c5s"
+    ;;
+
+  mail.cocytus.services)
+    printf "$hellmail"
+    ;;
+
+  metrics.cocytus.services)
+    printf "$metrics"
+    ;;
+
+  *)
+    printf "${orange}$SYSTEM_HOSTNAME${creset}"
+    ;;
+esac
+
+out+="${dim}Distro:| $SYSTEM_DISTRO ($SYSTEM_KERNEL)\n"
+out+="${dim}CPU:| $PROCESSOR_NAME ($PROCESSOR_COUNT vCPU)\n"
+printf "$out" | column -ts $'|' | sed -e 's/^/  /'
+printf "${creset}"

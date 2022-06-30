@@ -3,11 +3,12 @@ source $( dirname -- "${BASH_SOURCE[0]}" )/00-env
 
 # set column width
 COLUMNS=3
-
+IS_MANAGER=`docker info --format '{{.Swarm.ControlAvailable}}'`
 mapfile -t services < <(docker service ls --format '{{.Name}} {{.Replicas}}' | sort -k1 )
 
-out=""
-for i in "${!services[@]}"; do
+if [ $IS_MANAGER == "true" ]; then
+  out=""
+  for i in "${!services[@]}"; do
     IFS=" " read name replicas trim <<< ${services[i]}
     IFS="/" read r1 r2 <<< $replicas
 
@@ -32,8 +33,8 @@ for i in "${!services[@]}"; do
     if [ $((($i+1) % $COLUMNS)) -eq 0 ]; then
         out+="\n"
     fi
-done
-out+="\n"
+  done
+fi
 
 printf "\n${uline}docker swarm${creset}\n"
 printf "$out" | column -ts $',' | sed -e 's/^/  /'

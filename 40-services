@@ -1,10 +1,21 @@
 #!/bin/bash
 source $( dirname -- "${BASH_SOURCE[0]}" )/00-env
 
+SYSTEM_HOSTNAME=`cat /etc/hostname`
+
 # set column width
 COLUMNS=3
 
-services=("arma-sfp" "arma-cb" "docker" "telegraf" "ufw" "fftp")
+case $SYSTEM_HOSTNAME in
+    cocytus.services)
+    services=("arma-sfp" "arma-cb" "docker" "telegraf" "ufw" "fftp")
+    ;;
+
+    *)
+    services=("docker" "telegraf" "ufw")
+    ;;
+esac
+
 # sort services
 IFS=$'\n' services=($(sort <<<"${services[*]}"))
 unset IFS

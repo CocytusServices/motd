@@ -1,2 +1,3 @@
 #!/bin/bash
 printf "\n\n"
+(cd $( dirname -- "${BASH_SOURCE[0]}" ) && git pull) &

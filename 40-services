@@ -8,11 +8,11 @@ COLUMNS=3
 
 case $SYSTEM_HOSTNAME in
     cocytus.services)
-    services=("arma-sfp" "arma-cb" "docker" "telegraf" "ufw" "fftp")
+    services=("arma-sfp" "arma-cb" "docker" "ufw")
     ;;
 
     *)
-    services=("docker" "telegraf" "ufw")
+    services=("docker" "ufw")
     ;;
 esac
 

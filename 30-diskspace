@@ -7,7 +7,7 @@ max_usage=90
 bar_width=50
 
 # disk usage: ignore zfs, squashfs & tmpfs
-mapfile -t dfs < <(df -H -t ext4 -t xfs --output=target,pcent,size,used,avail | tail -n+2)
+mapfile -t dfs < <(df -H -t ext4 -t xfs -t btrfs --output=target,pcent,size,used,avail | tail -n+2)
 
 out=""
 

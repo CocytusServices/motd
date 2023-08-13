@@ -34,7 +34,7 @@ metrics+="\n\n${creset}"
 
 case $SYSTEM_HOSTNAME in 
 
-  cocytus.services)
+  cs-syd-dedi01)
     printf "$c5s"
     ;;
 

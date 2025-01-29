@@ -1,0 +1,14 @@
+#!/bin/bash
+source $( dirname -- "${BASH_SOURCE[0]}" )/00-env
+
+BACKUP_SERVICE=rclone.timer
+
+# set column width
+COLUMNS=3
+
+service_status=()
+
+# get status of all services
+backup_time=($(systemctl list-timers rclone.timer | awk 'NR==2 { end=index($0,"ago"); print substr($0,end-9,9);}'))
+
+printf "\nlast backup started ${uline}$backup_time${creset} ago\n"
